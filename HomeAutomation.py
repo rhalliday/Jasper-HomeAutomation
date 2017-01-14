@@ -11,6 +11,7 @@ import urllib2
 import json
 import base64
 import ssl
+from client import app_utils
 
 __author__ = "Rob Halliday"
 __license__ = "MIT"
@@ -89,10 +90,23 @@ def handle(text, mic, profile):
 
     # find the scene being referenced
     m = re.search('\w+ \w+ (.+)', text, re.IGNORECASE)
-    data = json.dumps({ 'scene': m.group(0).lower() })
+    search = m.group(0).lower()
+    mic.say('searching for ' + search);
+    data = json.dumps({ 'scene': search })
 
     obj = json.loads(send_request(data))
-    mic.say(obj['message'])
+    # if we have a scene id then try to run it, or report the error
+    if 'scene' in obj:
+        mic.say('do you want me to run scene ' + obj['message'])
+        if app_utils.isPositive(mic.activeListen()):
+            mic.say('running scene ' + obj['message'])
+            scene = json.dumps({ 'scene': obj['scene'] })
+            result = json.loads(send_request(scene))
+            mic.say(result['message'])
+        else:
+            mic.say('ok, awaiting further commands')
+    else:
+        mic.say(obj['message'])
 
 def isValid(text):
     """
