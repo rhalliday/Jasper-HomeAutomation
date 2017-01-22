@@ -22,7 +22,7 @@ __status__ = "Development"
 
 DEBUG = False
 
-WORDS = [ "RUN", "SCENE", "SEEN", "EVENING", "MODE", "NIGHT", "KIDS", "LOUNGE", "LIGHT", "ON", "OFF", "OUT", "BEDTIME", "RISE", "SHINE" ]
+WORDS = [ "RUN", "SCENE", "EVENING", "MODE", "NIGHT", "KIDS", "LOUNGE", "LIGHT", "ON", "OFF", "OUT", "BEDTIME", "RISE", "SHINE", "YES", "NO" ]
 PRIORITY = 10
 
 def handle(text, mic, profile):
@@ -89,21 +89,25 @@ def handle(text, mic, profile):
         return response.read()
 
     # find the scene being referenced
-    m = re.search('\w+ \w+ (.+)', text, re.IGNORECASE)
+    m = re.search('run \w+ (.+)', text, re.IGNORECASE)
     search = m.group(0).lower()
     mic.say('searching for ' + search);
     data = json.dumps({ 'scene': search })
 
     obj = json.loads(send_request(data))
     # if we have a scene id then try to run it, or report the error
-    if 'scene' in obj:
-        mic.say('do you want me to run scene ' + obj['message'])
-        if app_utils.isPositive(mic.activeListen()):
-            mic.say('running scene ' + obj['message'])
-            scene = json.dumps({ 'scene': obj['scene'] })
-            result = json.loads(send_request(scene))
-            mic.say(result['message'])
-        else:
+    if 'scenes' in obj:
+        run = False;
+        for scene in obj['scenes']:
+            mic.say('do you want me to run scene ' + scene['scene'])
+            if app_utils.isPositive(mic.activeListen()):
+                mic.say('running scene ' + scene['scene'])
+                request = json.dumps({ 'scene': scene['scene_id'] })
+                result = json.loads(send_request(request))
+                mic.say(result['message'])
+                run = True;
+                break
+        if not run:
             mic.say('ok, awaiting further commands')
     else:
         mic.say(obj['message'])
