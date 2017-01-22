@@ -15,7 +15,7 @@ from client import app_utils
 
 __author__ = "Rob Halliday"
 __license__ = "MIT"
-__version__ = "0.0.2"
+__version__ = "0.0.3"
 __maintainer__ = "Rob Halliday"
 __email__ = "rob_halliday_1@hotmail.com"
 __status__ = "Development"
