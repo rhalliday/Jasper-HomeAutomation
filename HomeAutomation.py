@@ -15,7 +15,7 @@ from client import app_utils
 
 __author__ = "Rob Halliday"
 __license__ = "MIT"
-__version__ = "0.0.3"
+__version__ = "0.0.4"
 __maintainer__ = "Rob Halliday"
 __email__ = "rob_halliday_1@hotmail.com"
 __status__ = "Development"
@@ -90,7 +90,7 @@ def handle(text, mic, profile):
 
     # find the scene being referenced
     m = re.search('run \w+ (.+)', text, re.IGNORECASE)
-    search = m.group(0).lower()
+    search = m.group(1).lower()
     mic.say('searching for ' + search);
     data = json.dumps({ 'scene': search })
 
